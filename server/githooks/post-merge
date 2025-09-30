@@ -1,0 +1,22 @@
+#!/bin/sh
+
+WEBHOOK_URL="https://discord.com/api/webhooks/1363069810208014468/fN-wjgfg0lvJJQMsEY3izL_gVze2mtEPv-rG30rcvasvzrTe9LiMVNVbFXTUry9ygYgw"
+USERNAME=$(git config user.name)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+TIME=$(date '+%d-%m-%Y %H:%M:%S')
+
+MESSAGE="[$TIME] $USERNAME just merged into \`$BRANCH\`"
+
+# Detect OS platform properly
+OS="$(uname)"
+
+# Escape message for JSON
+JSON_PAYLOAD="{\"content\": \"$MESSAGE\"}"
+
+if echo "$OS" | grep -iq "mingw"; then
+    # Git Bash on Windows (MINGW64_NT-10.0)
+    curl -H "Content-Type: application/json" -X POST -d "$JSON_PAYLOAD" "$WEBHOOK_URL"
+else
+    # Unix/MacOS/Linux
+    curl -H "Content-Type: application/json" -X POST -d "$JSON_PAYLOAD" "$WEBHOOK_URL"
+fi
